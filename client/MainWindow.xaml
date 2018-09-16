@@ -15,7 +15,9 @@
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <StackPanel>
+                        <TextBlock>IpServer</TextBlock>
                         <TextBlock Text="{Binding IpServer}"></TextBlock>
+                        <TextBlock>IpDatabase</TextBlock>
                         <TextBlock Text="{Binding IpDatabase}"></TextBlock>
                     </StackPanel>
                 </DataTemplate>
