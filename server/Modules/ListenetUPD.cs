@@ -12,13 +12,11 @@ namespace server.Modules
         private int _listenPort { get; set; }
         private byte[] _bytes { get; set; }
         private IPAddress _IPEnd { get; set; }
-        private Queue<IPAddress> _queues;
 
         public ListenetUPD(int Port)
         {
             _listenPort = Port;
             _conf = new OptionsConf();
-            _queues = new Queue<IPAddress>();
         }
 
         public void StartListener()

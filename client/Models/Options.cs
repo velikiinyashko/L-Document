@@ -48,7 +48,7 @@ namespace client.Models
                 OnPropertyChanged("IpDatabase");
             }
         }
-        public string BaseDatabse
+        public string BaseDatabase
         {
             get { return baseDatabase; }
             set
@@ -62,7 +62,7 @@ namespace client.Models
             get { return portDatabase; }
             set
             {
-                ipServer = value;
+                portDatabase = value;
                 OnPropertyChanged("portDatabase");
             }
         }
@@ -71,7 +71,7 @@ namespace client.Models
             get { return nameDatabase; }
             set
             {
-                ipServer = value;
+                nameDatabase = value;
                 OnPropertyChanged("nameDatabase");
             }
         }
@@ -80,7 +80,7 @@ namespace client.Models
             get { return passwordDatabase; }
             set
             {
-                ipServer = value;
+                passwordDatabase = value;
                 OnPropertyChanged("PasswordDatabase");
             }
         }

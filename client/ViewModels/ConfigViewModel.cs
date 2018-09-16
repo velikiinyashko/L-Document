@@ -11,7 +11,7 @@ using client.Models;
 
 namespace client.ViewModels
 {
-    class ConfigViewModel
+    class ConfigViewModel : IDisposable
     {
         private byte[] _buffer = null;
         private int _listenPort { get; set; }
@@ -51,6 +51,14 @@ namespace client.ViewModels
             byte[] SendBuffer = Encoding.UTF8.GetBytes(Message);
             IPEndPoint IpEnd = new IPEndPoint(IPAddress.Any, _listenPort);
             s.SendTo(SendBuffer, IpEnd);
+        }
+
+        public void Dispose()
+        {
+            _client = null;
+            _context = null;
+            _options = null;
+            _buffer = null;
         }
     }
 }
