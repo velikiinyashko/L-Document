@@ -14,6 +14,8 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Net;
 using System.Net.Sockets;
+using client.ViewModels;
+using System.Threading;
 
 namespace client
 {
@@ -26,13 +28,10 @@ namespace client
 
         public MainWindow()
         {
-            Socket s = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-            IPAddress Broadcast = IPAddress.Parse("192.168.0.255");
-
-            byte[] SendBuf = Encoding.ASCII.GetBytes("test");
-            IPEndPoint ep = new IPEndPoint(Broadcast, 9944);
-            s.SendTo(SendBuf, ep);
-
+            ConfigViewModel config = new ConfigViewModel(9944);
+            config.ReturnConfig();
+            //Thread thread = new Thread(new ThreadStart(config.ReturnConfig));
+            //thread.Start();
             InitializeComponent();
         }
     }

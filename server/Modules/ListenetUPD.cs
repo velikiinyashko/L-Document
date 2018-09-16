@@ -9,14 +9,16 @@ namespace server.Modules
     class ListenetUPD
     {
         private OptionsConf _conf;
-        private int _listenPort { get; set; } 
+        private int _listenPort { get; set; }
         private byte[] _bytes { get; set; }
         private IPAddress _IPEnd { get; set; }
+        private Queue<IPAddress> _queues;
 
         public ListenetUPD(int Port)
         {
             _listenPort = Port;
             _conf = new OptionsConf();
+            _queues = new Queue<IPAddress>();
         }
 
         public void StartListener()
@@ -29,11 +31,15 @@ namespace server.Modules
                 while (true)
                 {
                     _bytes = Listener.Receive(ref GroupEP);
-
-                    Console.WriteLine("Received broadcast from {0} :\n {1}\n",
-                        GroupEP.Address,
-                        Encoding.ASCII.GetString(_bytes, 0, _bytes.Length));
+                    string Message = Encoding.ASCII.GetString(_bytes, 0, _bytes.Length);
                     _IPEnd = GroupEP.Address;
+
+                    Console.WriteLine("{0} \\ Received broadcast from {1} :\n {2}\n", DateTime.Now, _IPEnd, Message);
+                    while (_bytes != null)
+                    {
+                        ReturnConfig();
+                        _bytes = null;
+                    }
                 }
             }
             catch (Exception e)
@@ -49,33 +55,12 @@ namespace server.Modules
 
         public void ReturnConfig()
         {
-            //Socket s = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-
-            //byte[] SendBuf = Encoding.ASCII.GetBytes(_conf.SetConf());
-            //IPEndPoint ep = new IPEndPoint(_IPEnd, 9944);
-            //s.SendTo(SendBuf, ep);
-            //Console.WriteLine(_conf.SetConf());
-            UdpClient client = new UdpClient();
-            try
-            {
-                while (true)
-                {
-                    if (_IPEnd != null)
-                    {
-                        _bytes = Encoding.UTF8.GetBytes(_conf.SetConf());
-                        client.Send(_bytes, _bytes.Length, _IPEnd.ToString(), _listenPort);
-                        Console.WriteLine(_conf.SetConf());
-                    }
-                }
-            }
-            catch(Exception e)
-            {
-                Console.WriteLine("{0} \n {1}", e.TargetSite, e.Message);
-            }
-            finally
-            {
-                client.Close();
-            }
+            Socket s = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+            string Message = _conf.SetConf();
+            byte[] SendBuf = Encoding.ASCII.GetBytes(Message);
+            IPEndPoint ep = new IPEndPoint(_IPEnd, 9944);
+            s.SendTo(SendBuf, ep);
+            Console.WriteLine(Message);
         }
     }
 }
