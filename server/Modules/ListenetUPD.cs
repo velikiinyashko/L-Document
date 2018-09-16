@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using server.Models;
 
 namespace server.Modules
 {
@@ -12,9 +13,12 @@ namespace server.Modules
         private int _listenPort { get; set; }
         private byte[] _bytes { get; set; }
         private IPAddress _IPEnd { get; set; }
+        private Logger<Exeptions> _logger { get; set; }
+        private Exeptions _exeptions { get; set; }
 
         public ListenetUPD(int Port)
         {
+            _logger = new Logger<Exeptions>();
             _listenPort = Port;
             _conf = new OptionsConf();
         }
@@ -42,8 +46,8 @@ namespace server.Modules
             }
             catch (Exception e)
             {
-                Console.WriteLine("{0} \n {1}", e.TargetSite, e.Message);
-
+                _exeptions = new Exeptions { NameMethod = e.TargetSite.ToString(), ErrorMessage = e.Message };
+                _logger.WriteLog(DateTime.Now, _exeptions);
             }
             finally
             {

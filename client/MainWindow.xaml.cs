@@ -16,6 +16,10 @@ using System.Net;
 using System.Net.Sockets;
 using client.ViewModels;
 using System.Threading;
+using client.Models;
+using System.Data.Entity;
+using System.Collections.ObjectModel;
+
 
 namespace client
 {
@@ -24,7 +28,7 @@ namespace client
     /// </summary>
     public partial class MainWindow : Window
     {
-
+        private BaseContext _context;
 
         public MainWindow()
         {
@@ -33,6 +37,12 @@ namespace client
             thread.Start();
             config.SendBroadcastUDP("test");
             InitializeComponent();
+
+            _context = new BaseContext();
+            _context.Options.Load();
+            this.DataContext = _context.Options.Local.ToBindingList();
+
         }
+
     }
 }

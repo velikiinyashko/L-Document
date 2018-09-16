@@ -21,10 +21,8 @@ namespace server
             Console.WriteLine("Waiting for client");
             ListenetUPD listenet = new ListenetUPD(9944);
 
-            //listenet.StartListener();
             Thread ReceiveThread = new Thread(new ThreadStart(listenet.StartListener));
             ReceiveThread.Start();
-            //listenet.ReturnConfig();
             Console.ReadKey();
 
         }
