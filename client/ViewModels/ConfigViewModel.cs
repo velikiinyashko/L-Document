@@ -44,11 +44,11 @@ namespace client.ViewModels
             }
         }
 
-        public void SendBroadcastUDP(string Message)
+        public void SendBroadcastUDP(string Message, string IpBradcast = "192.168.0.255")
         {
             Socket s = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
             byte[] SendBuffer = Encoding.UTF8.GetBytes(Message);
-            IPAddress IpBroad = IPAddress.Parse("192.168.0.255");
+            IPAddress IpBroad = IPAddress.Parse(IpBradcast);
             IPEndPoint IpEnd = new IPEndPoint(IpBroad, _listenPort);
             s.SendTo(SendBuffer, IpEnd);
         }
