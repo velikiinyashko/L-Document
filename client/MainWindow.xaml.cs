@@ -28,10 +28,10 @@ namespace client
 
         public MainWindow()
         {
-            ConfigViewModel config = new ConfigViewModel(9944);
-            config.ReturnConfig();
-            //Thread thread = new Thread(new ThreadStart(config.ReturnConfig));
-            //thread.Start();
+            ConfigViewModel config = new ConfigViewModel(9944, true);
+            Thread thread = new Thread(new ThreadStart(config.ListenerUDP));
+            thread.Start();
+            config.SendBroadcastUDP("test");
             InitializeComponent();
         }
     }

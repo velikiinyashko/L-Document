@@ -13,61 +13,44 @@ namespace client.ViewModels
 {
     class ConfigViewModel
     {
-        //private OptionsConf _conf;
+        private byte[] _buffer = null;
         private int _listenPort { get; set; }
-        private byte[] _bytes { get; set; }
-        private IPAddress _IPEnd { get; set; }
-        //private Queue<IPAddress> _queues;
+        private UdpClient _client = null;
+        private bool _furtStart;
+        private BaseContext _context = null;
+        private Options _options;
 
-        public ConfigViewModel(int Port)
+        public ConfigViewModel(int Port, bool FurstStart)
         {
             _listenPort = Port;
-            //_conf = new OptionsConf();
-            //_queues = new Queue<IPAddress>();
+            _furtStart = FurstStart;
+            _context = new BaseContext();
         }
 
-        public void StartListener()
+        public void ListenerUDP()
         {
-            UdpClient Listener = new UdpClient(_listenPort);
-            IPEndPoint GroupEP = new IPEndPoint(IPAddress.Any, _listenPort);
-
-            try
+            _client = new UdpClient(_listenPort);
+            IPEndPoint IPEnd = new IPEndPoint(IPAddress.Any, _listenPort);
+            while (_furtStart)
             {
-                _bytes = Listener.Receive(ref GroupEP);
-                string Message = Encoding.ASCII.GetString(_bytes, 0, _bytes.Length);
-                _IPEnd = GroupEP.Address;
-
-                while (_bytes != null)
+                while (_buffer != null)
                 {
-                    Options options = JsonConvert.DeserializeObject<Options>(Message);
-                    BaseContext context = new BaseContext();
-                    context.Options.Add(options);
-                    context.SaveChanges();
-                    _bytes = null;
-                }
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("{0} \n {1}", e.TargetSite, e.Message);
+                    _buffer = _client.Receive(ref IPEnd);
 
-            }
-            finally
-            {
-                Listener.Close();
+                }
+                string Message = Encoding.UTF8.GetString(_buffer, 0, _buffer.Length);
+                _options = JsonConvert.DeserializeObject<Options>(Message);
+                _context.Options.Add(_options);
+                _context.SaveChanges();
             }
         }
 
-        public void ReturnConfig()
+        public void SendBroadcastUDP(string Message)
         {
             Socket s = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-            IPAddress Broadcast = IPAddress.Broadcast;
-
-            byte[] SendBuf = Encoding.ASCII.GetBytes("L-Document");
-            IPEndPoint ep = new IPEndPoint(Broadcast, 9944);
-            s.SendTo(SendBuf, ep);
-
-            StartListener();
-
+            byte[] SendBuffer = Encoding.UTF8.GetBytes(Message);
+            IPEndPoint IpEnd = new IPEndPoint(IPAddress.Any, _listenPort);
+            s.SendTo(SendBuffer, IpEnd);
         }
     }
 }
