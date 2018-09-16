@@ -33,15 +33,14 @@ namespace client.ViewModels
             IPEndPoint IPEnd = new IPEndPoint(IPAddress.Any, _listenPort);
             while (_furtStart)
             {
-                while (_buffer != null)
+                _buffer = _client.Receive(ref IPEnd);
+                if (_buffer != null)
                 {
-                    _buffer = _client.Receive(ref IPEnd);
-
+                    string Message = Encoding.UTF8.GetString(_buffer, 0, _buffer.Length);
+                    _options = JsonConvert.DeserializeObject<Options>(Message);
+                    _context.Options.Add(_options);
+                    _context.SaveChanges();
                 }
-                string Message = Encoding.UTF8.GetString(_buffer, 0, _buffer.Length);
-                _options = JsonConvert.DeserializeObject<Options>(Message);
-                _context.Options.Add(_options);
-                _context.SaveChanges();
             }
         }
 
@@ -49,7 +48,8 @@ namespace client.ViewModels
         {
             Socket s = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
             byte[] SendBuffer = Encoding.UTF8.GetBytes(Message);
-            IPEndPoint IpEnd = new IPEndPoint(IPAddress.Any, _listenPort);
+            IPAddress IpBroad = IPAddress.Parse("192.168.0.255");
+            IPEndPoint IpEnd = new IPEndPoint(IpBroad, _listenPort);
             s.SendTo(SendBuffer, IpEnd);
         }
 
